@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="image">
+    <file>sky_blue.jpeg</file>
+    <file>sky_blue2.jpeg</file>
+    <file>sky_dark.jpeg</file>
+    <file>sky_night.jpeg</file>
+  </qresource>
+</RCC>
