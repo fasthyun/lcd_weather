@@ -7,6 +7,8 @@ from PyQt5 import uic
 import weather_rc
 
 form_ui, widget_class = uic.loadUiType('lcd_weather.ui')
+
+
 #화면을 띄우는데 사용되는 Class 선언
 class MainWindow(widget_class,form_ui) :
     def __init__(self) :
@@ -20,7 +22,20 @@ class AWidget(QWidget) :
         self.title1="awidget"
         self.basecolor={"title":QColor(0,100,200) ,"value": None}
         pass
-    
+    def changeSize(self):
+        gw=self.parentWidget().width()
+        gh=self.parentWidget().height()
+        #print("w=",w," , h=",h)
+        #self.setBaseSize(w/3,h/3)
+        self.resize(gw/3,gh/3)
+        self.move(0,0)
+        _height=self.height()        
+        _width=self.width()
+        _d=_height/10
+        _f=self.font()
+        _f.setPixelSize(_height/3 - _d)
+        self.setFont(_f)
+        
     def showEvent(self,event):
         print("show parent = " ,self.parentWidget())
         #w=self.parentWidget().width()
@@ -28,12 +43,7 @@ class AWidget(QWidget) :
         #self.setBaseSize(w/3,h/3)
         pass
     def paintEvent(self, event):
-        gw=self.parentWidget().width()
-        gh=self.parentWidget().height()
-        #print("w=",w," , h=",h)
-        #self.setBaseSize(w/3,h/3)
-        self.resize(gw/3,gh/3)
-        self.move(0,0)
+        self.changeSize()
         _height=self.height()        
         _width=self.width()
         
@@ -82,8 +92,6 @@ app = QApplication([])
 
 def timeout():
     pass
-
-
 
 timer = QTimer()
 timer.start(1000)
