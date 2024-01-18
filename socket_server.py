@@ -30,6 +30,20 @@ def parse_KWEATHER(_bytes):
     if _bytes[0] == 0x02 and _bytes[-1] == 0x03:
         print("ok")
         _list=_bytes[1:-1].decode().split(',')
+        if len(_list) == 20:
+            _id=_list[0]
+            _type=_list[1]
+            _datetime=_list[2]
+            _temp1 = _list[3]
+            _temp2 = _list[4]
+            _temp3 = _list[5]
+            _hum1 = _list[6]
+            _hum2 = _list[7]
+            _hum3 = _list[8]
+            _press1 = _list[9]
+            _press2 = _list[10]
+            _press3 = _list[11]
+            _voltage= _list[19]
         return _list
     return ""
     
@@ -47,9 +61,12 @@ class HandleClass(BaseRequestHandler):
     def finish(self):
         print("finished!")
 
+
 #server= TCPServer(("192.168.1.5",2000),HandleClass)
-#server= TCPServer(("0.0.0.0",2000),HandleClass)
-#server.serve_forever()
+server= TCPServer(("0.0.0.0",2000),HandleClass)
+server.timeout=0.1
+#server.serve_forever(0.1)
+server.handle_request()
 
 
 _b1=b'\x020001,01MN,20231223170800,-3.8,-3.7,-3.8,52.1,52.7,51.7,1024.8,1024.8,1024.8,0.0,0.0,0.2,0.0,0.0,92.9,84.6,15.0\x03'
