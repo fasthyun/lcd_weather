@@ -19,13 +19,14 @@ class MainWindow(widget_class,form_ui) :
         self.setupUi(self)
 
 class AWidget(QWidget) :
-    def __init__(self, parent) :
+    def __init__(self, parent,_title) :
         super().__init__( parent)
         print("parent= ", parent)
-        self.title1="awidget"
+        self.title1=_title
         self.basecolor={"title":QColor(0,100,200) ,"value": None}
         self.config={"title":"title","pos":(0,0)}
-        self.move(0,0)        
+        self.move(0,0)      
+        self.value=0
     
     def changeSize(self,d):
         gw=self.parentWidget().width()
@@ -76,7 +77,7 @@ class AWidget(QWidget) :
         #y1=_height*1/4
         r=QRect(0,y1,_width,_height*3/4) 
         p.setPen(QPen(QColor(1, 1, 1), 1))
-        p.drawText(r, Qt.AlignVCenter | Qt.AlignHCenter ,self.title1)
+        p.drawText(r, Qt.AlignVCenter | Qt.AlignHCenter ,str(self.value))
         p.end()
          
     
@@ -90,8 +91,11 @@ class MyWindow(QMainWindow):
         
         self.widgets=[]
         
-        for i in range(0,9):
-            self.widgets.append(AWidget(self))
+        #for i in range(0,9):
+        for i in items:
+            _obj=AWidget(self,i['title'])
+            i["object"]=_obj
+            self.widgets.append(_obj)
             
         #self.
     def resizeEvent(self, e):
@@ -116,17 +120,37 @@ class MyWindow(QMainWindow):
         
     def paintEvent(self, event):
         qp = QPainter()
-        qp.begin(self)
-      
+        qp.begin(self)      
         qp.drawImage(self.rect(),self.image_bg,self.image_bg.rect())
         qp.end()
         
+def onAppQuit():
+    if server is not None:
+        server.server_close()
+        print("close server!!")
+    #if app is not None:
+    #    app.closeAllWindows()
+    
+    
+items = [ 
+ { "name":"wind_direction", "title" :"풍향", "object": None ,"class":AWidget },
+ { "name":"wind_speed", "title" :"풍속", "object": None ,"class": AWidget },
+ { "name":"humidity", "title" :"습도", "object":  None ,"class":AWidget },
+ { "name":"temp_now", "title" :"현재기온", "object":  None ,"class": AWidget ,"style": ""},
+ { "name":"humidity", "title" :"일최고기온", "object": None ,"class": AWidget },
+ { "name":"humidity", "title" :"일최저기온", "object":  None ,"class": AWidget },
+ { "name":"humidity", "title" :"강수량", "object":  None ,"class": AWidget },
+ { "name":"humidity", "title" :"전일강수량", "object": None ,"class": AWidget },
+ { "name":"humidity", "title" :"전일강수량", "object": None ,"class": AWidget }]
+
+
 app = QApplication([])
 #widget = uic.loadUi('lcd_weather.ui')
-
+app.aboutToQuit.connect(onAppQuit)
 def timeout():
-    server.timeout=0.01
-    server.handle_request()
+    if server is not None:
+        server.timeout=0.01
+        server.handle_request()
     print("timeout!")
     pass
 
@@ -136,14 +160,10 @@ timer.timeout.connect(timeout)
 
 #window = widget #MainWindow()
 window = MyWindow()
-"""window = QWidget()
-layout = QVBoxLayout()
-layout.addWidget(QPushButton('Top'))
-layout.addWidget(QPushButton('Bottom'))
-window.setLayout(layout)
-"""
 window.show()
+
 app.exec()
+
+
 del app 
 del server
-

@@ -66,8 +66,12 @@ class HandleClass(BaseRequestHandler):
 server= TCPServer(("0.0.0.0",2000),HandleClass)
 server.timeout=0.1
 #server.serve_forever(0.1)
-server.handle_request()
+#server.handle_request()
+#server.server_close()
 
+
+if __name__ =="main" :
+    pass
 
 _b1=b'\x020001,01MN,20231223170800,-3.8,-3.7,-3.8,52.1,52.7,51.7,1024.8,1024.8,1024.8,0.0,0.0,0.2,0.0,0.0,92.9,84.6,15.0\x03'
 _b2=b'\x02-0.5,-15.6,0.0\x03\r\n'
@@ -86,3 +90,4 @@ b'\x020001,01MN,20231223171300,-4.0,-4.0,-4.0,52.3,52.4,52.3,1024.9,1025.0,1024.
 b'\x02-0.5,-15.6,0.0\x03\r\n'
 
 """
+print("__pacakge__",__package__)
