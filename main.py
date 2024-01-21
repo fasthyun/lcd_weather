@@ -1,3 +1,8 @@
+# work for pyhton3.6 
+# because of 
+#    1. ordreddict 
+#    2. 
+
 from PyQt5.QtWidgets import QApplication,QMainWindow, QWidget, QPushButton, QVBoxLayout
 from PyQt5.QtWidgets import QFrame
 from PyQt5.QtGui import QPainter, QImage, QPen, QColor
@@ -6,7 +11,7 @@ from PyQt5 import uic
 #from PyQt5 import rc
 import weather_rc
 
-from socket_server import server
+from socket_server import startServer
 
 
 form_ui, widget_class = uic.loadUiType('lcd_weather.ui')
@@ -92,9 +97,10 @@ class MyWindow(QMainWindow):
         self.widgets=[]
         
         #for i in range(0,9):
-        for i in items:
-            _obj=AWidget(self,i['title'])
-            i["object"]=_obj
+        for k in items.keys():
+            _it=items[k]
+            _obj=AWidget(self,_it['title'])
+            _it["object"]=_obj
             self.widgets.append(_obj)
             
         #self.
@@ -132,18 +138,20 @@ def onAppQuit():
     #    app.closeAllWindows()
     
     
-items = [ 
- { "name":"wind_direction", "title" :"풍향", "object": None ,"class":AWidget },
- { "name":"wind_speed", "title" :"풍속", "object": None ,"class": AWidget },
- { "name":"humidity", "title" :"습도", "object":  None ,"class":AWidget },
- { "name":"temp_now", "title" :"현재기온", "object":  None ,"class": AWidget ,"style": ""},
- { "name":"humidity", "title" :"일최고기온", "object": None ,"class": AWidget },
- { "name":"humidity", "title" :"일최저기온", "object":  None ,"class": AWidget },
- { "name":"humidity", "title" :"강수량", "object":  None ,"class": AWidget },
- { "name":"humidity", "title" :"전일강수량", "object": None ,"class": AWidget },
- { "name":"humidity", "title" :"전일강수량", "object": None ,"class": AWidget }]
+#orderedDictionary
+items = {  
+    "wind_direction" : { "name":"wind_direction", "title" :"풍향", "object": None ,"class":AWidget },
+    "wind_speed":{ "name":"wind_speed", "title" :"풍속", "object": None ,"class": AWidget },
+    "humidity": { "name":"humidity", "title" :"습도", "object":  None ,"class":AWidget },
+    "temp_now": { "name":"temp_now", "title" :"현재기온", "object":  None ,"class": AWidget ,"style": ""},
+    "temp_high_aday":{ "name":"", "title" :"일최고기온", "object": None ,"class": AWidget },
+   "temp_low_aday": { "name":"", "title" :"일최저기온", "object":  None ,"class": AWidget },
+   "rainfall": { "name":"", "title" :"강수량", "object":  None ,"class": AWidget },
+   "rainfall_yestorday": { "name":"humidity", "title" :"전일강수량", "object": None ,"class": AWidget },
+   "snowfall": { "name":"", "title" :"강설량", "object": None ,"class": AWidget }
+ }
 
-
+server=startServer()
 app = QApplication([])
 #widget = uic.loadUi('lcd_weather.ui')
 app.aboutToQuit.connect(onAppQuit)
@@ -157,6 +165,7 @@ def timeout():
 timer = QTimer()
 timer.start(1000)
 timer.timeout.connect(timeout)
+
 
 #window = widget #MainWindow()
 window = MyWindow()

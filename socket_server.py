@@ -43,6 +43,13 @@ def parse_KWEATHER(_bytes):
             _press1 = _list[9]
             _press2 = _list[10]
             _press3 = _list[11]
+            _none = _list[12]
+            _none = _list[13]
+            _windspeed = _list[14]
+            _none = _list[15]
+            _none = _list[16]
+            _none = _list[17]
+            _winddirection = _list[18]
             _voltage= _list[19]
         return _list
     return ""
@@ -54,29 +61,27 @@ class HandleClass(BaseRequestHandler):
         pass
     def handle(self):
         sock=self.request 
-        data=sock.recv(1024)
+        _data=sock.recv(1024)
         print("happend?", self.client_address,type(self.request))
         #print(" ===>", data)
+        parse_KWEATHER(_data)
         
     def finish(self):
         print("finished!")
 
-
-#server= TCPServer(("192.168.1.5",2000),HandleClass)
-server= TCPServer(("0.0.0.0",2000),HandleClass)
-server.timeout=0.1
+def startServer():
+    #server= TCPServer(("192.168.1.5",2000),HandleClass)
+    server= TCPServer(("0.0.0.0",2000),HandleClass)
+    server.timeout=0.1
+    return server
 #server.serve_forever(0.1)
 #server.handle_request()
 #server.server_close()
 
 
-if __name__ =="main" :
-    pass
-
 _b1=b'\x020001,01MN,20231223170800,-3.8,-3.7,-3.8,52.1,52.7,51.7,1024.8,1024.8,1024.8,0.0,0.0,0.2,0.0,0.0,92.9,84.6,15.0\x03'
 _b2=b'\x02-0.5,-15.6,0.0\x03\r\n'
 
-c=parse_KWEATHER(_b1)
 """
 b'\x020001,01MN,20231223170800,-3.8,-3.7,-3.8,52.1,52.7,51.7,1024.8,1024.8,1024.8,0.0,0.0,0.2,0.0,0.0,92.9,84.6,15.0\x03'
 b'\x02-0.5,-15.6,0.0\x03\r\n'
@@ -90,4 +95,9 @@ b'\x020001,01MN,20231223171300,-4.0,-4.0,-4.0,52.3,52.4,52.3,1024.9,1025.0,1024.
 b'\x02-0.5,-15.6,0.0\x03\r\n'
 
 """
+
+
+if __name__ =="main" :    
+    c=parse_KWEATHER(_b1)
+    pass
 print("__pacakge__",__package__)
