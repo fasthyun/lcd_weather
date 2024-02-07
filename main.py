@@ -128,14 +128,27 @@ class ItemWidget(QWidget) :
         p.drawText(r, Qt.AlignVCenter | Qt.AlignHCenter ,str(self.value))        
         
         p.end()
-         
+
+class dateWidget(ItemWidget):
+    def __init__(self, parent,_title) :
+        super().__init__(parent,_title)
+        pass
+    def setValue(self,_val):        
+        self.val=_val
+        
+    def paintEvent(self, event):
+        #self.changeSize()
+        _height=self.height()        
+        _width=self.width()
+  
 class WindDirectionWidget(ItemWidget):
     def __init__(self, parent,_title) :
         super().__init__(parent,_title)
         pass
     
     def setValue(self,_val):        
-        val=_val
+        val=_val 
+        _val=float(_val)
         if 350 < _val < 360 and  0< _val <20 : 
             val="북"
         if 20< _val <70 : 
@@ -150,7 +163,7 @@ class WindDirectionWidget(ItemWidget):
             val="남서"            
         if 250< _val <290 : 
             val="서"
-        if 290< val <350 : 
+        if 290< _val <350 : 
             val="북서"      
         self.value=val
         #dra
@@ -232,7 +245,8 @@ items = {
    "temp_low_day": { "name":"", "title" :"일최저기온", "object":  None ,"class": ItemWidget },  # cyan 
    "rainfall": { "name":"", "title" :"강수량", "object":  None ,"class": ItemWidget },
    "rainfall_yesterday": { "name":"humidity", "title" :"전일강수량", "object": None ,"class": ItemWidget },
-   "snowfall": { "name":"", "title" :"강설량", "object": None ,"class": ItemWidget }
+   "snowfall": { "name":"", "title" :"강설량", "object": None ,"class": ItemWidget },
+   "datetime": { "name":"", "title" :"", "object": None ,"class": dateWidget }
  }
 
 server=Server()
@@ -241,10 +255,10 @@ app = QApplication([])
 app.aboutToQuit.connect(onAppQuit)
 
 def timeout():
-    print("DEBUG: timeout()!",datetime.datetime.now())
+    #print("DEBUG: timeout()!",datetime.datetime.now())
     if server is not None:
         server.handle_request() # process the quequed network data 
-        if server.que.qsize() !=0 :
+        while server.que.qsize() !=0 : 
             _frame=server.que.get() 
             _dict=parse_KWEATHER(_frame)
             #print("received data _len= ",len(_data),_dict)
@@ -253,12 +267,13 @@ def timeout():
                     _val=_dict[k]
                     _it =items[k]
                     _it['object'].setValue(_val)
+                    _it['object'].update()
     
     #time.sleep(0.1)
     pass
 
 timer = QTimer()
-timer.start(4000)
+timer.start(500)
 timer.timeout.connect(timeout)
 
 

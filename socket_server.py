@@ -13,6 +13,7 @@ b'\x020001,01MN,20231223171200,-4.0,-3.9,-4.0,52.4,52.5,52.4,1024.9,1024.9,1024.
 b'\x02-0.5,-15.6,0.0\x03\r\n'
 b'\x020001,01MN,20231223171300,-4.0,-4.0,-4.0,52.3,52.4,52.3,1024.9,1025.0,1024.9,0.0,0.0,0.2,0.0,0.0,108.6,135.4,15.0\x03'
 b'\x02-0.5,-15.6,0.0\x03\r\n'
+unknown data = b'\x020001,10SE,20240125151940,-0.2,34.6,1015.9,0.0,0.0,2.7,231.2,15.0'
 """
 
 from socketserver import TCPServer,BaseRequestHandler
@@ -106,17 +107,18 @@ class HandleClass(BaseRequestHandler):
     def handle(self):
         sock=self.request 
         _data=sock.recv(1024)
-        self.put(_data)    
-        print("DEBUG: transfered from : ", self.client_address,type(self.request),len(_data))        
+        self.server.put(_data)    
+        print("DEBUG: transfered from : ", self.client_address,len(_data))       
         while True:
-            _frame = self.getFrame()
+            _frame = self.server.getFrame()
+            print("DEBUG: _frame=",_frame)
             if _frame is not None:
                 self.server.que.put(_frame)
             else:
                 break 
         
     def finish(self):
-        print("finished!")
+        print("DEBUG: HandleClass() finished()")
 
 class Server(TCPServer):
     def __init__(self):
@@ -130,16 +132,18 @@ class Server(TCPServer):
         self.buffer += new_bytes
         
     def getFrame(self):
-        _bytes=self.buffer        
+        _bytes=self.buffer[:]
         s=_bytes.find(0x02);
         if s == -1 :            
             return None 
         e=_bytes.find(0x03);
         if e == -1 :             
-            return None        
+            return None     
+        #print("DEBUG:s,e=",s,e)
         if s < e:
             self.buffer= _bytes[e:]
-            return _bytes[s:e] # safer        
+            #print("DEBUG: _bytes[s:e]=",_bytes[s:)
+            return _bytes[s:e+1] # safer        
         # something wrong !  end < start  so , 
         self.buffer = _bytes[s:] # delete until start
         return None 
@@ -148,8 +152,6 @@ class Server(TCPServer):
 #server.serve_forever(0.1)
 #server.handle_request()
 #server.server_close()
-
-
 if __name__ =="__main__" :    
     c=parse_KWEATHER(_b1)
     print(c)
